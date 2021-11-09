@@ -1,2 +1,2 @@
-# graph-recognition
-UIUC ECE-549 Course Project
+# Graph Recognition
+UIUC ECE-549 F21 Course Project
