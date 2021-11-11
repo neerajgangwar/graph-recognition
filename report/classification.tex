@@ -57,12 +57,6 @@ The weights applied to each parameter reflect traits held by classes of stroke. 
 \subsection{Experiments}
 Similarly to the segmentation algorithm, we tested classification by drawing strokes on the iPyCanvas. One example is shown in Figure \ref{fig:classification_example}.
 
-\subsection{Future Work}
-
-Our future work is to connect the probability distributions computed in this step to the domain interpretation step. Certain classes tend to have similar probabilities, for example, vertices and self-loops are difficult to differentiate. These are typically differentiated in domain interpretation rather than classification. \\
-
-In addition, we may need to further test these implementations on more data, or train more on our own data so that our weights better reflect our specific implementations.
-
 \begin{figure}
 	\centering
 	\begin{subfigure}{0.9\textwidth}
@@ -72,3 +66,10 @@ In addition, we may need to further test these implementations on more data, or 
 	\caption{Example segment. $p_{vertex} = 0.0000076\text{, }   p_{arrow} = 0.256\text{, } p_{edge} = 0.996\text{, }  p_{loop} = 0.000086$}
 	\label{fig:classification_example}
 \end{figure}
+
+\subsection{Future Work}
+
+Our future work is to connect the probability distributions computed in this step to the domain interpretation step. Certain classes tend to have similar probabilities, for example, vertices and self-loops are difficult to differentiate. These are typically differentiated in domain interpretation rather than classification. \\
+
+In addition, we may need to further test these implementations on more data, or train more on our own data so that our weights better reflect our specific implementations.
+
