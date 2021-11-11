@@ -1,0 +1,32 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{nameref}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage[sorting=none, maxcitenames=2]{biblatex}
+\addbibresource{bibliography.bib}
+\setlength{\parindent}{0pt}
+
+% Title Page
+\title{ECE-549 / CS-543\\
+	Project Report}
+\author{}
+\date{}
+
+
+\begin{document}
+	\maketitle
+	\vspace{-1.5em}
+	\rule{\textwidth}{0.1em}
+	
+	\input{./segmentation.tex}
+	
+	\printbibliography[title=References]
+	
+\end{document}
