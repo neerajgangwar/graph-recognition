@@ -24,9 +24,9 @@ The segmentation points identify the transition from one component to the next. 
 \subsection{Algorithm}
 The algorithm to identify segmentation points is based on the observation that there are abrupt changes in curvature at these points. This is based on the properties of transition that can occur in the three types of graph components. This is shown in figure \ref{fig:seg_curvature}.\\
 
-Before the curvature calculation, some pre-processing of input data is required. We are using iPyCanvas to capture the coordinates of the drawn components. The number of coordinates captured depends on the drawing speed. If the drawing speed is higher in certain region, a number of points captured will be higher in that region. This count is normalized by considering the distance between two points. If the Euclidean distance between two consecutive points, $P_i$ and $P_{i+1}$, is less than a threshold, $d_t$, we drop $P_{i+1}$. Here, $d_t$ is a hyperparameter which needs to be trained based on the input data. For our usecase, $d_t = 1$ works well.\\
+Before the curvature calculation, some pre-processing of input data is required. We use iPyCanvas \cite{ipycanvas} to capture the coordinates of the drawn components. The number of coordinates captured depends on the drawing speed. If the drawing speed is higher in certain regions, the number of points captured will be higher in those region. This count is normalized by considering the distance between two points. If the Euclidean distance between two consecutive points, $P_i$ and $P_{i+1}$, is less than a threshold, $d_t$, we drop $P_{i+1}$. Here, $d_t$ is a hyperparameter which needs to be trained based on the input data. For our usecase, $d_t = 1$ works well.\\
 
-The curvature of a point $P_i$ is computed by calculating the angle between vectors from by joining $P_{i-s}$ and $P_i$ and $P_i$ and $P_{i+s}$. Here, $s$ is the second hyperparameters. For our usecase, we have kept $s=3$ based on experiments.
+The curvature of a point $P_i$ is computed by calculating the angles between vectors formed by joining $P_{i-s}$ and $P_i$ and $P_i$ and $P_{i+s}$. $s$ is the second hyperparameters. For our usecase, we have kept $s=3$ based on experiments.
 
 \begin{equation}
 	C_s(P_i) = \arccos \left(  \frac{\overrightarrow{P_{i-s} P_i} \cdot \overrightarrow{P_i P_{i+s}}}{ \Vert \overrightarrow{P_{i-s} P_i}  \Vert \; \Vert \overrightarrow{P_i P_{i+s}} \Vert  } \right) 
@@ -38,7 +38,7 @@ Once the curvature is computed for all captured points, we compute the abnormali
 \end{equation}
 where $a = max(1, i-w)$ and $b = min(n, i+w)$.\\
 
-$w$ is the third hyperparameter. For our usecase, we use $w=5$ based on the experiments. Next, we need to find ranges of points where $k A_{s, w}(P_i) > 1$ and select the point with maximum abnormality in each range as the segmentation point. The multiplication factor is the fourth hyperparameter.\\
+$w$ is the third hyperparameter. For our usecase, we use $w=5$ based on our experiments. Next, we need to find ranges of points where $k A_{s, w}(P_i) > 1$ and select the point with maximum abnormality in each range as the segmentation point. The multiplication factor $k$ is the fourth hyperparameter.\\
 
 \begin{figure}
 	\centering
@@ -71,4 +71,4 @@ To test the segmentation algorithm, we drew some components and shapes manually 
 \end{figure}
 
 \subsection{Future Work}
-The immediate next step is to integrate the segmentation module with the classification module. The current segmentation algorithm is tailored for the online usecase. The future work will be extend this algorithm for offline graphs.
+The immediate next step is to integrate the segmentation module with the classification module and fine tune the four hyperparameters discussed in this section. In addition, we will work on extending the algorithm to support offline graph recognition.
