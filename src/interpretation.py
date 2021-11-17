@@ -2,11 +2,12 @@ import numpy as np
 from numpy import linalg as LA
 
 '''
------------All sections of this code is not yet tested------------
+-----------All sections of this script not yet tested------------
 Machine Specifications:
-- Vertex is specified by a center c(x,y) point and radius r
-- Edge is specified by a sequence of target points E = [e_1,e_2,...,e_n]
-- Arrow is pecified by a triangle ABC
+- Vertex is specified by a center c(x,y) and radius r : {c=(x,y),r=(x,y),t}
+- Edge is specified by a sequence of target points e_i(x,y) : {E=[e_1,e_2,...,e_n],t}
+- Arrow is specified by a triangle ABC : {(A_x,A_y),(B_x,B_y),(C_x,C_y),t}
+- Self-loop is specified by a sequence of target points s_i(x,y) : {S=[s_1,s_2,...,s_n],t}
 '''
 
 #---------Domain Interpretation----------
@@ -27,46 +28,76 @@ def num_components(p):
   return len(p)
 
 def num_connections(p):
-  return 2*(len(vertex_edge(p)) + len(arrow_edge(p)))
+  return 2*(len(vertex_edge(p)) + len(vertex_edge(p,loop=True)) + \
+    len(arrow_edge(p)) + len(arrow_edge(p,loop=True)))
 
 def num_missing_connections(p):
   arrows = []
+  edges = []
+  loops =[]
   for comp in p:
     if comp[2] == 'arrow':
       arrows.append(comp)
+    elif comp[2] == 'edge':
+      edges.append(comp)
+    elif comp[2] == 'self-loop':
+      loops.append(comp)
+  
+  # 1 edge = 2 edge endpoints
+  mis_edge_pts = 2*(len(edges)+len(loops))-len(vertex_edge(p))-len(vertex_edge(p,loops=True))
+  mis_arrows = len(arrows)-len(arrow_edge(p))-len(arrow_edge(p,loop=True))
+  mis_loops=0
+  sl_conns = vertex_edge(p,loops=True)
+  for loop in loops:
+    v1 = None
+    v2 = None
+    fl = 0
+    for conn in sl_conns:
+      if conn[1]==loop and fl==0:
+        v1 = conn[0]
+        fl+=1
+      if conn[1]==loop and fl==1:
+        v2 = conn[0]
+        fl+=1
+    if fl==2 and v1!=v2:
+      mis_loops+=1
+
+  return mis_edge_pts + mis_arrows + 1000*mis_loops
+
+def arrow_edge(p,loop=False):
+  # p = machine_spec(p)
+  connections = []
+  gamma = 20
+  arrows = []
   edges = []
   for comp in p:
-    if comp[2] == 'edge':
-      edges.append(comp)
-  
-  mis_edge_pts = 2*len(edges)-len(vertex_edge(p))
-  mis_arrows = 2*len(arrows)-len(arrow_edge(p))
-  # include self-loops if disjoint from edges
-  return mis_edge_pts + mis_arrows # + mis_self_loops
-
-
-def arrow_edge(p):
-  # p = machine_spec(p)
-  arrows = []
-  for comp in p:
     if comp[2] == 'arrow':
       arrows.append(comp)
+    elif not loop:
+      if comp[2] == 'edge':
+        edges.append(comp)
+    else:
+      if comp[2] == 'self-loop':
+        edges.append(comp)
   # TODO -- check my arrow-edge implementation
   pass
 
-def vertex_edge(p):
+def vertex_edge(p,loop=False):
   # p = machine_spec(p)
   connections = []
   thres = 20
   vertices = []
+  edges = []
   for comp in p:
     if comp[2] == 'vertex':
       vertices.append(comp)
-  edges = []
-  for comp in p:
-    if comp[2] == 'edge':
-      edges.append(comp)
-  
+    elif not loop:
+      if comp[2] == 'edge':
+        edges.append(comp)
+    else:
+      if comp[2] == 'self-loop':
+        edges.append(comp)
+
   for e in edges: # e = {E=[e_1,...,e_n],t_i}
     # endpoint 1
     q = np.inf
@@ -86,7 +117,7 @@ def vertex_edge(p):
       d = dist(v[0],e[0][-1])
       if d-v[1] < thres and max(d-v[1],0) < q:
         q = max(d-v[1],0)
-        conn = [v,e,e[0][1]]
+        conn = [v,e,e[0][-1]]
     if len(conn)!=0:
       connections.append(conn)  
   
@@ -101,7 +132,7 @@ def classification_score(p):
 def score(p,A,B,C):
   if classification_score(p)[1]:
     return classification_score(p)[0] + A*num_components(p) + \
-    B*num_connections(p) + C*num_missing_connections(p)
+      B*num_connections(p) + C*num_missing_connections(p)
   else:
     return 0
 
@@ -122,7 +153,7 @@ def Cost(Y,A,B,C,):
     totalcost += CostSequence(Q_i,A,B,C)
   return totalcost
 
-# Q = sets of strokes introduced by the user = sketched graph
+# Q = set of strokes introduced by the user = sketched graph
 def CostSequence(Q,A,B,C):
   cost = 0
   L = [] # locked-in graph
@@ -153,9 +184,10 @@ def LockIn(Z_i,G_i):
       return Z_i[j]
   return False
 
+#---------Retrieve Best Parameters----------
 if __name__ == '__main__':
   Y = [] # sketched graphs
-  # code tested on sample classification probability values
+  # code tested on sample classification probabilities
   As = np.arange(-1.6,-0.8,0.1)
   Bs = np.arange(0.2,0.7,0.1)
   Cs = np.arange(-0.6,-0.1,0.1)
