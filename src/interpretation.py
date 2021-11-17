@@ -36,11 +36,11 @@ def num_missing_connections(p):
   edges = []
   loops =[]
   for comp in p:
-    if comp[2] == 'arrow':
+    if comp[3] == 'arrow':
       arrows.append(comp)
-    elif comp[2] == 'edge':
+    elif comp[1] == 'edge':
       edges.append(comp)
-    elif comp[2] == 'self-loop':
+    elif comp[1] == 'self-loop':
       loops.append(comp)
   
   # 1 edge = 2 edge endpoints
@@ -71,13 +71,13 @@ def arrow_edge(p,loop=False):
   arrows = []
   edges = []
   for comp in p:
-    if comp[2] == 'arrow':
+    if comp[3] == 'arrow':
       arrows.append(comp)
     elif not loop:
-      if comp[2] == 'edge':
+      if comp[1] == 'edge':
         edges.append(comp)
     else:
-      if comp[2] == 'self-loop':
+      if comp[1] == 'self-loop':
         edges.append(comp)
   # TODO -- check my arrow-edge implementation
   pass
@@ -92,10 +92,10 @@ def vertex_edge(p,loop=False):
     if comp[2] == 'vertex':
       vertices.append(comp)
     elif not loop:
-      if comp[2] == 'edge':
+      if comp[1] == 'edge':
         edges.append(comp)
     else:
-      if comp[2] == 'self-loop':
+      if comp[1] == 'self-loop':
         edges.append(comp)
 
   for e in edges: # e = {E=[e_1,...,e_n],t_i}
