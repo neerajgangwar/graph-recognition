@@ -77,12 +77,15 @@ def circumscribed_circle_ratio(stroke):
     CH_points = stroke[CH.vertices]
     
     point_distances = scipy.spatial.distance.cdist(CH_points, CH_points, metric='euclidean')
-
+    
+    idx1, idx2 = np.argmax(point_distances)
+    
+    
     diameter = point_distances.max()
     
     carea = (diameter / 2) ** 2 * np.pi
     
-    return CH.volume / carea
+    return CH.volume / carea, CH_points[idx1] + CH_points[idx2] / 2, diameter / 2
     
 '''
     Find the inscribed triangle ratio of a stroke 
@@ -127,7 +130,7 @@ def triangle_ratio(stroke):
         if area > max_area and angle > 0.35:
             max_area = area
             
-    return max_area / CH.volume / 2
+    return max_area / CH.volume / 2, A, B, C
   
 
 def convex_hull_parameter(stroke):
@@ -166,24 +169,53 @@ def disjoint_shapes(stroke, alpha):
                     
     return 0
     
+def target_points(stroke, distance):
+    start = stroke[0]
+    end = stroke[stroke.shape[0] - 1]
+    
+    ret = np.array([start])
+    
+    cumdist = 0
+    for n in range(1, stroke.shape[0] - 1):
+        cumdist += np.lingalg.norm(stroke[n] - stroke[n - 1])
+        if (cumdist > distance):
+            ret = np.append(ret, stroke[n], axis = 0)
+            cumdist %= distance
+    
+    ret = np.append(ret, end, axis = 0)
+    return ret
+    
+    
 
 '''
     Using parameters pulled from original paper
    
     vertex, arrow, edge, self-loop
+    
+    Return np.array of probabilities and dict of specifications
 
 '''
-def find_probability(stroke):   
-    print(alpha_shape_ratio(stroke, 0.04))
-    
+def classify(stroke):      
+    stroke = fix_stroke_distance(stroke, 2, 10)
+
     parameters = np.array([[1.20, 21.20, -14.89, -8.61, -5.88, -1000],
         [-4.13, -8.45, 21.40, -3.98, -27.19, -1000],
         [0.67, -18.85, -3.07, 2.44, 17.78, -1000],
         [-0.28, 23.74, -16.93, -25.10, 6.40, -1000]])
     
-    features = np.array([1, circumscribed_circle_ratio(stroke), triangle_ratio(stroke), \
+    specifications = {}
+    
+    circle_ratio, center, radius = circumscribed_circle_ratio(stroke)
+        
+    specifications['vertex'] = {'center': center, 'radius': radius}
+    specifications['edge'] = target_points(stroke, 40)
+    specifications['loop'] = target_points(stroke, 20)
+    
+    tri_ratio, a, b, c = = triangle_ratio(stroke)
+    specifications['triangle']  = {'a' = a, 'b' = b, 'c' = c}
+    
+    
+    features = np.array([1, circle_ratio, tri_ratio, \
                 alpha_shape_ratio(stroke, 0.04), convex_hull_parameter(stroke), disjoint_shapes(stroke, 0.04)])
     
-    print(features)
-    
-    return 1 / (1 + np.exp(-np.matmul(parameters, features.T)))
+    return 1 / (1 + np.exp(-np.matmul(parameters, features.T))), specifications
