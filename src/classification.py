@@ -77,9 +77,8 @@ def circumscribed_circle_ratio(stroke):
     CH_points = stroke[CH.vertices]
     
     point_distances = scipy.spatial.distance.cdist(CH_points, CH_points, metric='euclidean')
-    
-    idx1, idx2 = np.argmax(point_distances)
-    
+        
+    idx1, idx2 = np.unravel_index(np.argmax(point_distances, axis=None), point_distances.shape)
     
     diameter = point_distances.max()
     
@@ -171,15 +170,16 @@ def disjoint_shapes(stroke, alpha):
     
 def target_points(stroke, distance):
     start = stroke[0]
-    end = stroke[stroke.shape[0] - 1]
+    end = stroke[stroke.shape[0] - 1:stroke.shape[0]]
     
     ret = np.array([start])
     
+    
     cumdist = 0
     for n in range(1, stroke.shape[0] - 1):
-        cumdist += np.lingalg.norm(stroke[n] - stroke[n - 1])
+        cumdist += np.linalg.norm(stroke[n] - stroke[n - 1])
         if (cumdist > distance):
-            ret = np.append(ret, stroke[n], axis = 0)
+            ret = np.append(ret, stroke[n:n+1], axis = 0)
             cumdist %= distance
     
     ret = np.append(ret, end, axis = 0)
@@ -211,8 +211,8 @@ def classify(stroke):
     specifications['edge'] = target_points(stroke, 40)
     specifications['loop'] = target_points(stroke, 20)
     
-    tri_ratio, a, b, c = = triangle_ratio(stroke)
-    specifications['triangle']  = {'a' = a, 'b' = b, 'c' = c}
+    tri_ratio, a, b, c = triangle_ratio(stroke)
+    specifications['triangle'] = {'a' : a, 'b' : b, 'c' : c}
     
     
     features = np.array([1, circle_ratio, tri_ratio, \
