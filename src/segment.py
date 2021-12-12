@@ -5,11 +5,14 @@ from scipy.ndimage import maximum_filter
 def preprocess(pts, threshold=2):
     processed_pts = np.zeros((0, 2))
     
+    prev_idx = 0
+    processed_pts = np.array([pts[0]]).reshape(-1, 2)
     for idx in range(1, len(pts)):
-        dist = np.linalg.norm(pts[idx] - pts[idx-1])
+        dist = np.linalg.norm(pts[idx] - pts[prev_idx])
         if dist >= threshold:
             processed_pts = np.append(processed_pts, pts[idx].reshape(-1, 2), axis=0)
-    
+            prev_idx = idx
+
     return processed_pts
 
 
@@ -74,9 +77,9 @@ def findSegmenationPoints(pts):
         pts = np.array(pts)
     
     processed_pts = preprocess(pts)
-    c_list = computeCurvature(processed_pts)
-    a_list = computeAbnormality(c_list)
-    seg_pt_idx = findAbnormalityAboveThreshold(a_list, 0.4)
+    c_list = computeCurvature(processed_pts, skip=3)
+    a_list = computeAbnormality(c_list, window=15)
+    seg_pt_idx = findAbnormalityAboveThreshold(a_list, kinv=0.833)
     out_points = []
     prev = 0
     
