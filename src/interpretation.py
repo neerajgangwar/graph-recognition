@@ -146,6 +146,7 @@ def is_isomorphic(z,Gi):
 #----------Training Algorithm------------
 
 # Y = sequences of stroke sets = sketched graphs Q_1, Q_2, ...
+# exhaustive search for sketched graphs
 def Cost(Y,A,B,C,):
   totalcost = 0
   for i in range(len(Y)):
