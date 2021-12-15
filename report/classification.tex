@@ -2,9 +2,9 @@
 
 After segmentation is completed, we run classification on each segment. This is to determine the probability that a given segment is one of four types - vertex, self-loop, edge, or arrow. These probabilities are used in domain interpretation step to reconstruct the original graph. 
 
-\subsection{Algorithm}
+\subsection{Original Algorithm}
 
-In order to determine the segment's probability distribution, we find five parameters. These parameters were chosen by \citeauthor{daly2015hand} \cite{daly2015hand}, based on the alpha shape and convex hull of the segment. \\ 
+The first version of classification we implemented was a recreation of the original paper. In order to determine the segment's probability distribution, we find five parameters. These parameters were chosen by \citeauthor{daly2015hand} \cite{daly2015hand}, based on the alpha shape and convex hull of the segment. \\ 
 
 To compute the alpha shape and convex hull, we use the Alpha Shape Toolbox library \cite{alphashapetoolbox}, as well as SciPy's ConvexHull implementation \cite{scipy}. These libraries provide tools to easily find the area, perimeter, and points of these shapes. \\
 
@@ -54,8 +54,23 @@ The final parameter disqualifies any strokes that are not properly segmented. Th
 
 The weights applied to each parameter reflect traits held by classes of stroke. For example, vertices and self-loops are almost circular, so they assign high positive weight to the circumscribed circle parameter. For testing purposes, we use the original weights trained by \citeauthor{daly2015hand} \cite{daly2015hand}. Notably, the weight for parameter $x_5$ is not trained, and instead set to always be -1000, to minimize the probability distribution of any shape with multiple disjoint regions.
 
+\subsection{Offline Implementation}
+
+\citeauthor{daly2015hand}'s implementation of classification was trained on manually chosen features. The particular implementation we used took each stroke as a set of inputs. Classification, unlike segmentation and domain interpretation, can be accomplished without needing the chronological order of drawn points. As long as the collection of points is present, features can be extracted without any significant difference in effectiveness. Within our implementation, the only feature computed with exponential complexity is the circumscribed circle, and that feature can be computed in polynomial time through rotating calipers. \\
+
+There is the consideration of the input points being too granular. The original paper handles this by removing any line segments greater than a given distance. This implementation requires chronological order of points, but we can accomplish a similar level of granularity through downsampling the input pixels.
+
+\subsection{CNN Approach}
+While classification does not need significant improvements to be effective both online and offline, we explored training a CNN as another method for classification. \\
+
+Creating and labelling data would take a significant amount of time for an exploration, and there are no public data sets for this particular problem that we could find. Because the classes of graph components are so simple in shape, we can use a data set like MNIST, with only a few changes. MNIST is a very basic and commonly used data set, so almost any network can easily achieve a very high accuracy. For demonstration purposes, we modified one of the networks from \citeauthor{mnist_network_ref} \cite{mnist_network_ref}, and changed the number of classes in the final layer. We only consider digits that are similar in shape to our desired component classes.\\
+
+While effective, this method cannot differentiate self-loops and vertices as effectively as the original paper. For this reason we change number of classes to 3 rather than 4, combining vertices and self-loops into one class. The primary difference between the two classes is the perimeter of the stroke. The original implementation is able to differentiate by using perimeter as a feature. We would need to make the network scale-aware, and further preprocess the data set. \\
+
+Another issue with this method is that domain interpretation requires additional features not used in classification that the CNN cannot extract. The hand-picked features for classification are similar enough to the features needed for domain interpretation that it is efficient to compute simultaneously, which cannot be done by the CNN.
+
 \subsection{Experiments}
-Similarly to the segmentation algorithm, we tested classification by drawing strokes on the iPyCanvas. One example is shown in Figure \ref{fig:classification_example}.
+Similarly to the segmentation algorithm, we tested classification by drawing single strokes on the iPyCanvas. One example is shown in Figure \ref{fig:classification_example}.
 
 \begin{figure}
 	\centering
