@@ -86,5 +86,7 @@ def findSegmenationPoints(pts):
     for i in range(len(seg_pt_idx)):
         out_points.append(processed_pts[prev:seg_pt_idx[i]])
         prev = seg_pt_idx[i]
+    if prev < len(processed_pts):
+        out_points.append(processed_pts[prev:])
         
     return out_points, c_list, a_list
