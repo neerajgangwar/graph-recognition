@@ -75,7 +75,7 @@ def findAbnormalityAboveThreshold(abnormality_list, kinv=0.5):
 def findSegmenationPoints(pts):
     if type(pts) != np.ndarray:
         pts = np.array(pts)
-    
+
     processed_pts = preprocess(pts)
     c_list = computeCurvature(processed_pts, skip=3)
     a_list = computeAbnormality(c_list, window=15)
@@ -86,7 +86,10 @@ def findSegmenationPoints(pts):
     for i in range(len(seg_pt_idx)):
         out_points.append(processed_pts[prev:seg_pt_idx[i]])
         prev = seg_pt_idx[i]
-    if prev < len(processed_pts):
-        out_points.append(processed_pts[prev:])
-        
+
+    # If no segmentation points (corners), return all the points. Applicable in cases
+    # of an edge or node where there are no corners.
+    if len(out_points) == 0:
+        out_points = processed_pts
+
     return out_points, c_list, a_list
