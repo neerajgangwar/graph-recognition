@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from scipy.ndimage import maximum_filter
 
@@ -33,7 +34,11 @@ def computeCurvature(pts, skip=2):
         curvature = np.dot(v1, v2)
         curvature /= np.linalg.norm(v1)
         curvature /= np.linalg.norm(v2)
-        curvature = np.arccos(curvature)
+        # Clipping to ensure arccos does not fail with invalid
+        # values. Ex: it might happen due to float comutations that
+        # the dot product results in 1.000000000000002 instead of
+        # 1.00.
+        curvature = np.arccos(np.clip(curvature, -1, 1))
         
         curvature_list = np.append(curvature_list, curvature)
         
@@ -72,7 +77,7 @@ def findAbnormalityAboveThreshold(abnormality_list, kinv=0.5):
     return np.setdiff1d(max_idx[0], zero_val_idx[0])
 
 
-def findSegmenationPoints(pts):
+def findSegmentationPoints(pts):
     if type(pts) != np.ndarray:
         pts = np.array(pts)
 
@@ -94,4 +99,32 @@ def findSegmenationPoints(pts):
     if len(out_points) == 0:
         out_points = np.array([processed_pts])
 
-    return out_points, c_list, a_list
+    return out_points, c_list, a_list, processed_pts[seg_pt_idx]
+
+
+def findSegmentationPointsSpeedBased(pts, timestamps_in_ns, threshold=50):
+    if type(pts) != np.ndarray:
+        pts = np.array(pts)
+
+    s_list = np.zeros((1))
+
+    for idx in range(1, len(pts) - 1):
+        dist = math.dist(pts[idx], pts[idx - 1])
+        t = timestamps_in_ns[idx] - timestamps_in_ns[idx - 1]
+        s_list = np.append(s_list, dist / t)
+
+    # For first and last index, speed will be 0
+    s_list = np.append(s_list, 0)
+
+    # Convert from pixels/ns to pixels/s
+    s_list *= 1e9
+
+    seg_idx = np.where(s_list < threshold)
+    seg_idx = seg_idx[0]
+    
+    # Remove first and last index as speed is undefined at those points
+    seg_idx = np.setdiff1d(seg_idx, [0, len(pts) - 1])
+    seg_pts = pts[seg_idx]
+    seg_pts = preprocess(seg_pts, threshold=10)
+
+    return s_list, seg_pts
