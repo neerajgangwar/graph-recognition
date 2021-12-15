@@ -86,10 +86,12 @@ def findSegmenationPoints(pts):
     for i in range(len(seg_pt_idx)):
         out_points.append(processed_pts[prev:seg_pt_idx[i]])
         prev = seg_pt_idx[i]
+    if prev < len(processed_pts) - 1:
+        out_points.append(processed_pts[prev:])
 
     # If no segmentation points (corners), return all the points. Applicable in cases
     # of an edge or node where there are no corners.
     if len(out_points) == 0:
-        out_points = processed_pts
+        out_points = np.array([processed_pts])
 
     return out_points, c_list, a_list
