@@ -156,9 +156,6 @@ def disjoint_shapes(stroke, alpha):
         point[point == 0] = 51
         if point.min() > 50:
             return 1
-
-    if point_count < len(points):
-        return 1
                     
     return 0
     
