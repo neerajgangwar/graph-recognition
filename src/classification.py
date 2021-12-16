@@ -129,7 +129,7 @@ def triangle_ratio(stroke):
         if area > max_area and angle > 0.35:
             max_area = area
             
-    return max_area / CH.volume / 2, A, B, C
+    return max_area / CH.volume / 2, CH_points[A], CH_points[B], CH_points[C]
   
 
 def convex_hull_parameter(stroke):
