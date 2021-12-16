@@ -70,18 +70,28 @@ def recog(S_i,L,A,B,C):
   for element in itertools.product(*all_segs):
     candidates.append(L+list(element))
   
+  #flag = []
   for element in itertools.product(*all_probs):
     # all component probabilities are greater than 0.2
     if all(i >= 0.2 for i in element):
       probabilities.append(sum(element))
+    #  flag.append(True)
     else:
       probabilities.append(0.0)
+    #  flag.append(False)
   
   scores = []
   for cand in candidates:
     scores.append(score(cand,A,B,C))
   
   final_scores = [sum(x) for x in zip(scores, probabilities)]
+  #final_scores = []
+  #for i in range(len(probabilities)):
+  #  if flag[i]:
+  #    final_scores.append(scores[i]+probabilities[i])
+  #  else:
+  #    final_scores.append(0.0)
+
   sorted_candidates = [x for _, x in sorted(zip(final_scores, candidates), reverse=True)]
   
   return sorted_candidates
@@ -93,8 +103,6 @@ def num_components(p):
   return len(p)
 
 def num_connections(p):
-  #print('vertex-edge: ',len(vertex_edge(p)))
-  #print('arrow-edge: ', len(arrow_edge(p))) 
   return 2*(len(vertex_edge(p)) + len(vertex_edge(p,loop=True)) + len(arrow_edge(p)) + len(arrow_edge(p,loop=True)))
 
 def num_missing_connections(p):
@@ -119,12 +127,16 @@ def num_missing_connections(p):
     v2 = None
     fl = 0
     for conn in sl_conns:
-      if conn[1]==loop and fl==0:
-        v1 = conn[0]
-        fl+=1
-      if conn[1]==loop and fl==1:
-        v2 = conn[0]
-        fl+=1
+      if len(loop[1])==len(conn[1][1]):
+        if all(list(x)==list(y) for x,y in zip(loop[1],conn[1][1])):
+          if fl==0:
+            v1 = conn[0]
+            fl+=1
+          elif fl==1:
+            v2 = conn[0]
+            fl+=1
+          else:
+            break
     if fl==2 and v1!=v2:
       mis_loops+=1
 
@@ -424,13 +436,13 @@ def train_interpretation(Y):
   As = np.arange(-1.6,-0.8,0.1)
   Bs = np.arange(0.2,0.7,0.1)
   Cs = np.arange(-0.6,-0.1,0.1)
-
+  all_params = [As,Bs,Cs]
+  
   mincost = np.inf
   minparam = []
-  for A, B, C in zip(As,Bs,Cs):
+  for A,B,C in itertools.product(*all_params):
     currcost = Cost(Y,A,B,C)
     if currcost < mincost:
       mincost = currcost
       minparam = [A,B,C]
-
   print(minparam)
