@@ -152,16 +152,10 @@ def disjoint_shapes(stroke, alpha):
     
     point_distances = scipy.spatial.distance.cdist(points, points, metric='euclidean')
         
-    point_count = 0
-    
-    while len(stack) > 0:
-        idx = stack.pop()
-        if ptrs[idx] == -1:
-            point_count += 1
-            ptrs[idx] = 1
-            for i in range(len(points)):
-                if ptrs[i] == - 1 and point_distances[idx,i] < 50:
-                    stack.append(i)
+    for point in point_distances:
+        point[point == 0] = 51
+        if point.min() > 50:
+            return 1
 
     if point_count < len(points):
         return 1
