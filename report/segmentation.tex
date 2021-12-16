@@ -79,7 +79,7 @@ Once the speed is computed for all captured points, we find ranges of points whe
 
 After computing the potential segmentation points, we perform a post-processing step to drop the points that are close to each other. This step is similar to the pre-processing step discussed in the curvature-based segmentation algorithm and has a hyperparameter $d_t$.\\
 
-As we would see in subsection \ref{sec:seg_experiments} that this method is not super accurate and produces quite a few false positives. But it is very fast compared to the curvature-based segmentation. In general, the component classification step can take care of false positives. So, if a usecase requires faster computation, this method can be used with a good component classifier to reduce the overall computation time.
+As we would see in subsection \ref{sec:seg_experiments}, this method is not super accurate and produces quite a few false positives. But it is very fast compared to the curvature-based segmentation. In general, the component classification step can take care of false positives. So, if a usecase requires faster computation, this method can be used with a good component classifier to reduce the overall computation time.
 
 \begin{figure}
 	\centering
