@@ -1,4 +1,5 @@
 \section{Domain Interpretation}
+\label{sec:interpretation}
 
 After we compute the probabilities from the classification section, we need to produce a final interpretation of the graph in terms of edges, vertices, arrows, self-loops, connections between edges and vertices and connections between arrows and edges. To do this we cannot use the trivial method of partitioning the graph into segments (from our segmentation step) and  simply solving for the partition that produces the largest sum of classification probabilities (from the classification step). This is mainly because there is significant interaction between components of a graph. The design that we follow rests on the idea that the connections between the components influence the selection of the best interpretation.\\
 

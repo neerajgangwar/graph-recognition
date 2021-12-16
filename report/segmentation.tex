@@ -1,4 +1,5 @@
 \section{Segmentation}
+\label{sec:segmentation}
 The first step towards graph recognition is segmentation. This step identifies the segmentation points in the input graph. These points are fed into the recognition task to identify a component. Our implementation is based on the idea presented by \citeauthor{daly2015hand} \cite{daly2015hand} and assumes that the entire component is drawn in one stroke. However, drawing multiple components in the same stroke is acceptable for our implementation.\\
 
 The segmentation points identify the transition from one component to the next. These are referred to as true segmentation points.  However, there are certain challenges in the segmentation task. These challenges arise from the fact that there might be additional points in a component with similar geometric properties as true segmentation points. This is shown in Figure \ref{fig:seg_false_neg}. The challenges can be divided into two buckets: false positives and false negatives. The points that are incorrectly identified as segmentation points contribute to false positives. These cases are less severe as they can be handled in the classification step. The points that are true segmentation points but are missed by the segmentation algorithm are false negatives. These cases are more severe as we cannot recover from these errors. The goal of the segmentation algorithm would be to minimize false positives while ensuring that there are no false negatives.\\
@@ -8,16 +9,19 @@ The segmentation points identify the transition from one component to the next. 
 	\begin{subfigure}{0.3\textwidth}
 		\centering
 		\includegraphics[scale=0.2]{./img/seg_orig.jpg}
+		\caption{}
 	\end{subfigure}
 	\begin{subfigure}{0.3\textwidth}
 		\centering
 		\includegraphics[scale=0.2]{./img/seg_true_seg.jpg}
+		\caption{}
 	\end{subfigure}
-	\begin{subfigure}{0.3\textwidth}j
+	\begin{subfigure}{0.3\textwidth}
 		\centering
 		\includegraphics[scale=0.2]{./img/seg_false_seg.jpg}
+		\caption{}
 	\end{subfigure}
-	\caption{\textit{left} a line and arrow head drawn in one stroke, \textit{middle} true segmentation point, \textit{right} additional points with similar properties as true segmentation points}
+	\caption{(a) a line and arrow head drawn in one stroke. (b) true segmentation point. (c) additional points with similar properties as true segmentation points.}
 	\label{fig:seg_false_neg}
 \end{figure}
 
@@ -25,7 +29,7 @@ The segmentation points identify the transition from one component to the next. 
 We explored two segmentation algorithms for the online recognition problem - curvature-based and speed-based.
 
 \subsubsection{Curvature-Based Segmentation}
-The curvature-based segmentation algorithm is based on the observation that there are abrupt changes in curvature at segmentation points. This is based on the properties of transition that can occur in the three types of graph components. This is shown in figure \ref{fig:seg_curvature}.\\
+The curvature-based segmentation algorithm is based on the observation that there are abrupt changes in curvature at segmentation points \cite{daly2015hand}. This is based on the properties of transition that can occur in the three types of graph components. This is shown in figure \ref{fig:seg_curvature}.\\
 
 Before the curvature calculation, some pre-processing of input data is required. We use iPyCanvas \cite{ipycanvas} to capture the coordinates of the drawn components. The number of coordinates captured depends on the drawing speed. If the drawing speed is higher in certain regions, the number of points captured will be higher in those region. This count is normalized by considering the distance between two points. If the Euclidean distance between two consecutive points, $P_i$ and $P_{i+1}$, is less than a threshold, $d_t$, we drop $P_{i+1}$. Here, $d_t$ is a hyperparameter that needs to be trained based on the input data.\\
 
@@ -81,7 +85,7 @@ As we would see in subsection \ref{sec:seg_experiments} that this method is not 
 	\centering
 	\begin{subfigure}{0.45\textwidth}
 		\centering
-		\includegraphics[scale=0.5]{./img/seg_results_arrow.jpg}
+		\includegraphics[scale=0.4]{./img/seg_results_arrow.jpg}
 		\caption{}
 		\label{fig:seg_results_arrow}
 	\end{subfigure}
@@ -156,7 +160,7 @@ Figure \ref{fig:seg_results_speed} shows the detected segmentation points for th
 
 The execution time for both algorithms is shown in table \ref{table:exec_time}.
 
-\begin{table}[h]
+\begin{table}
 	\centering
 	\begin{tabular}{|c|c|c|}
 		\hline

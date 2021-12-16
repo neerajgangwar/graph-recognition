@@ -1,4 +1,5 @@
 \section{Classification}
+\label{sec:classification}
 
 After segmentation is completed, we run classification on each segment. This is to determine the probability that a given segment is one of four types - vertex, self-loop, edge, or arrow. These probabilities are used in domain interpretation step to reconstruct the original graph. 
 
@@ -46,11 +47,11 @@ The fourth parameter is used to distinguish vertices and arrows from other segme
 
 \subsubsection{Disjoint shapes}
 
-The final parameter disqualifies any strokes that are not properly segmented. This parameter $x_5$ is computed as \\
+The final parameter disqualifies any strokes that are not properly segmented. This parameter $x_5$ is computed as
 
 \begin{equation}
-	x_5 = \text{Number of disjoint regions in alpha shape over 50 pixels apart} - 1
-\end{equation} \\
+	x_5 = \; \parbox{14em}{Number of disjoint regions in alpha shape over 50 pixels apart} - 1
+\end{equation}
 
 The weights applied to each parameter reflect traits held by classes of stroke. For example, vertices and self-loops are almost circular, so they assign high positive weight to the circumscribed circle parameter. For testing purposes, we use the original weights trained by \citeauthor{daly2015hand} \cite{daly2015hand}. Notably, the weight for parameter $x_5$ is not trained, and instead set to always be -1000, to minimize the probability distribution of any shape with multiple disjoint regions.
 
@@ -84,7 +85,7 @@ For the CNN method, we used the test dataset described above.
 
 \begin{figure}
 	\centering
-	\begin{subfigure}{0.9\textwidth}
+	\begin{subfigure}{0.45\textwidth}
 		\centering
 		\includegraphics[scale=0.5]{./img/classificationexample}
 	\end{subfigure}

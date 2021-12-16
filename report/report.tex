@@ -1,30 +1,39 @@
-\documentclass[10pt]{article}
-\usepackage[margin=1in]{geometry}
-\usepackage{graphicx}
+\documentclass[10pt, twocolumn,letterpaper]{article}
+%\usepackage[margin=1in]{geometry}
+\usepackage{cvpr}
+%\usepackage{graphicx}
 \usepackage[font=small, labelfont=bf]{caption}
 \usepackage{subcaption}
-\usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{nameref}
-\usepackage{multirow}
+%\usepackage{hyperref}
+%\usepackage{xcolor}
+%\usepackage{nameref}
+%\usepackage{multirow}
+%\usepackage{amsmath}
+%\usepackage{mathtools}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{graphicx}
 \usepackage{amsmath}
-\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage[breaklinks=true,bookmarks=false]{hyperref}
 \usepackage[sorting=none, maxcitenames=2]{biblatex}
 \addbibresource{bibliography.bib}
 \setlength{\parindent}{0pt}
 
+\cvprfinalcopy
+
 % Title Page
-\title{ECE-549 / CS-543\\
-	Project Report\\
-	Hand-Drawn Graph Recognition}
-\author{Debopam Sanyal (dsanyal2), Neeraj Gangwar (gangwar2), Bryan Huang (bryanh2)}
-\date{}
+\title{Hand-Drawn Graph Recognition\\
+	ECE-549 / CS-543\\
+	Project Report}
+\author{Debopam Sanyal (dsanyal2) \and Neeraj Gangwar (gangwar2) \and Bryan Huang (bryanh2)}
+% \date{}
 
 
 \begin{document}
 	\maketitle
-	\vspace{-1.5em}
-	\rule{\textwidth}{0.1em}
+	%\vspace{-1.5em}
+	%\rule{\textwidth}{0.1em}
 	
 	\input{./introduction.tex}
 	
@@ -33,6 +42,9 @@
 	\input{./classification.tex}
 	
 	\input{./interpretation.tex}
+	
+	\section{Member Roles}
+	Neeraj: segmentation, Bryan: classification, Debopam: interpretation and training. All of us will work on integrating the subparts into a whole. We use Github to maintain and share data (\href{https://github.com/neerajgangwar/graph-recognition}{Github Repository}). We meet once a week to discuss updates and issues.
 	
 	\printbibliography[title=References]
 	
