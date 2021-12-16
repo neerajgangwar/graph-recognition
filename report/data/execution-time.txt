@@ -1,0 +1,11 @@
+Arrow:
+    Speed based: 555 µs ± 15 µs
+    Curvature based: 3.38 ms ± 28.9 µs
+
+Pentagram:
+    Speed based: 973 µs ± 24.4 µs
+    Curvature based: 8.77 ms ± 779 µs
+
+Arrow 2:
+    Speed based: 1.28 ms ± 23.1 µs
+    Curvature based: 8.86 ms ± 656 µs

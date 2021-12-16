@@ -83,7 +83,7 @@ def findSegmentationPoints(pts):
 
     processed_pts = preprocess(pts)
     c_list = computeCurvature(processed_pts, skip=3)
-    a_list = computeAbnormality(c_list, window=15)
+    a_list = computeAbnormality(c_list, window=12)
     seg_pt_idx = findAbnormalityAboveThreshold(a_list, kinv=0.833)
     out_points = []
     prev = 0
