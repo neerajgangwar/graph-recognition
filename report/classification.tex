@@ -56,21 +56,31 @@ The weights applied to each parameter reflect traits held by classes of stroke. 
 
 \subsection{Offline Implementation}
 
-\citeauthor{daly2015hand}'s implementation of classification was trained on manually chosen features. The particular implementation we used took each stroke as a set of inputs. Classification, unlike segmentation and domain interpretation, can be accomplished without needing the chronological order of drawn points. As long as the collection of points is present, features can be extracted without any significant difference in effectiveness. Within our implementation, the only feature computed with exponential complexity is the circumscribed circle, and that feature can be computed in polynomial time through rotating calipers. \\
+Classification, unlike segmentation and domain interpretation, can be accomplished without needing the chronological order of drawn points. As long as the collection of points is present, features can be extracted without any significant difference in effectiveness. Within our implementation, the only feature computed with exponential complexity is the circumscribed circle, and that feature can be computed in polynomial time through rotating calipers. \\
 
 There is the consideration of the input points being too granular. The original paper handles this by removing any line segments greater than a given distance. This implementation requires chronological order of points, but we can accomplish a similar level of granularity through downsampling the input pixels.
 
 \subsection{CNN Approach}
-While classification does not need significant improvements to be effective both online and offline, we explored training a CNN as another method for classification. \\
+While classification does not need significant improvements to be effective both online and offline, we explored training a CNN as another method for classification. \citeauthor{daly2015hand}'s implementation of classification was trained on manually chosen features, so we attempted to see how features extracted by CNN would complete the same problem.\\
 
-Creating and labelling data would take a significant amount of time for an exploration, and there are no public data sets for this particular problem that we could find. Because the classes of graph components are so simple in shape, we can use a data set like MNIST, with only a few changes. MNIST is a very basic and commonly used data set, so almost any network can easily achieve a very high accuracy. For demonstration purposes, we modified one of the networks from \citeauthor{mnist_network_ref} \cite{mnist_network_ref}, and changed the number of classes in the final layer. We only consider digits that are similar in shape to our desired component classes.\\
+Creating and labelling data would take a significant amount of time for an exploration, and there are no public data sets for this particular problem that we could find. Because the classes of graph components are so simple in shape, we can use a data set like MNIST, with only a few changes. MNIST is a very basic and commonly used data set, so almost any network can easily achieve a very high accuracy. However, high accuracy on the MNIST test set does not translate to high accuracy with our task. \\
 
-While effective, this method cannot differentiate self-loops and vertices as effectively as the original paper. For this reason we change number of classes to 3 rather than 4, combining vertices and self-loops into one class. The primary difference between the two classes is the perimeter of the stroke. The original implementation is able to differentiate by using perimeter as a feature. We would need to make the network scale-aware, and further preprocess the data set. \\
+This method cannot differentiate self-loops and vertices as effectively as the original paper. For this reason we change number of classes to 3 rather than 4, combining vertices and self-loops into one class. The primary difference between the two classes is the perimeter of the stroke. The original implementation is able to differentiate by using perimeter as a feature. We would need to make the network scale-aware, and further preprocess the data set. \\
 
-Another issue with this method is that domain interpretation requires additional features not used in classification that the CNN cannot extract. The hand-picked features for classification are similar enough to the features needed for domain interpretation that it is efficient to compute simultaneously, which cannot be done by the CNN.
+Another issue with this method is that domain interpretation requires additional information not used in classification that the CNN cannot extract. The hand-picked features for classification are similar enough to the features needed for domain interpretation that it is efficient to compute simultaneously, which cannot be done by the CNN. \\
+
+Line thickness also negatively affects this method. In the online case, the original method does not need image data and extracts points through the canvas. In the offline case, the original method can use erosion to reduce a stroke to a list of relevant points. However, in the CNN method, the MNIST dataset contains training images with particular line widths. Assuming that a drawn graph has consistent line width throughout, after resizing strokes with different sizes, the resulting CNN inputs would have different line widths. In our demonstration notebook, we use a fixed canvas size and line width, but in experiments, we found that too small of a line width would make classification incorrect. \\
+
+Due to all of the above considerations, we found that stroke classification is better suited to using hand-picked geometric features than recognition through CNN.
+
+\subsubsection{Dataset}
+
+We used a modified version of the MNIST dataset. All entries labelled with a digit other than 0, 1, and 7 were removed from the dataset. The resulting dataset contained 24,888 training images and 4,175 test images. We randomly rotate the training input within a range of 360 degrees, in order to train for all possible orientations.
 
 \subsection{Experiments}
 Similarly to the segmentation algorithm, we tested classification by drawing single strokes on the iPyCanvas. One example is shown in Figure \ref{fig:classification_example}.
+
+For the CNN method, we used the test dataset described above.
 
 \begin{figure}
 	\centering
