@@ -2,6 +2,7 @@ import numpy as np
 from numpy import linalg as LA
 import math
 import itertools
+import random
 
 from .segment import findSegmentationPoints
 from .classification import classify
@@ -59,9 +60,9 @@ def recog(S_i,L,A,B,C):
         curr_seg.append(l)
       if comp=='triangle':
         t.append('triangle')
-        t.append([specs[comp]['a']])
-        t.append([specs[comp]['b']])
-        t.append([specs[comp]['c']])
+        t.append(list(specs[comp]['a']))
+        t.append(list(specs[comp]['b']))
+        t.append(list(specs[comp]['c']))
         curr_seg.append(t)
 
     all_segs.append(curr_seg)
@@ -70,38 +71,37 @@ def recog(S_i,L,A,B,C):
     candidates.append(L+list(element))
   
   for element in itertools.product(*all_probs):
-    probabilities.append(sum(element))
+    # all component probabilities are greater than 0.2
+    if all(i >= 0.2 for i in element):
+      probabilities.append(sum(element))
+    else:
+      probabilities.append(0.0)
   
-  sorted_candidates = [x for _, x in sorted(zip(probabilities, candidates))]
+  scores = []
+  for cand in candidates:
+    scores.append(score(cand,A,B,C))
+  
+  final_scores = [sum(x) for x in zip(scores, probabilities)]
+  sorted_candidates = [x for _, x in sorted(zip(final_scores, candidates), reverse=True)]
   
   return sorted_candidates
 
-def classification_score(p):
-  score = 0
-  flag = True # all component probabilities are greater than 0.2
-
-  return score,flag
-
-def score(p,A,B,C):
-  if classification_score(p)[1]:
-    return classification_score(p)[0] + A*num_components(p) + \
-      B*num_connections(p) + C*num_missing_connections(p)
-  else:
-    return 0
+def score(p,A=-1.3,B=0.2,C=-0.6):
+  return A*num_components(p) + B*num_connections(p) + C*num_missing_connections(p)
 
 def num_components(p):
   return len(p)
 
 def num_connections(p):
-  return 2*(len(vertex_edge(p)) + len(vertex_edge(p,loop=True)) + \
-    len(arrow_edge(p)) + len(arrow_edge(p,loop=True)))
+  #print('vertex-edge: ',len(vertex_edge(p)))
+  #print('arrow-edge: ', len(arrow_edge(p))) 
+  return 2*(len(vertex_edge(p)) + len(vertex_edge(p,loop=True)) + len(arrow_edge(p)) + len(arrow_edge(p,loop=True)))
 
 def num_missing_connections(p):
   arrows = []
   edges = []
   loops =[]
   for comp in p:
-    # if len(comp)>=3
     if comp[0] == 'triangle':
       arrows.append(comp)
     elif comp[0] == 'edge':
@@ -110,10 +110,10 @@ def num_missing_connections(p):
       loops.append(comp)
   
   # 1 edge = 2 edge endpoints
-  mis_edge_pts = 2*(len(edges)+len(loops))-len(vertex_edge(p))-len(vertex_edge(p,loops=True))
+  mis_edge_pts = 2*(len(edges)+len(loops))-len(vertex_edge(p))-len(vertex_edge(p,loop=True))
   mis_arrows = len(arrows)-len(arrow_edge(p))-len(arrow_edge(p,loop=True))
   mis_loops=0
-  sl_conns = vertex_edge(p,loops=True)
+  sl_conns = vertex_edge(p,loop=True)
   for loop in loops:
     v1 = None
     v2 = None
@@ -131,30 +131,30 @@ def num_missing_connections(p):
   return mis_edge_pts + mis_arrows + 1000*mis_loops
 
 def ccw(A,B,C):
-    return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
+  return (C[1]-A[1]) * (B[0]-A[0]) > (B[1]-A[1]) * (C[0]-A[0])
 
 # Return true if line segments AB and CD intersect
 # https://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
 def intersect(A,B,C,D):
-    return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
+  return ccw(A,C,D) != ccw(B,C,D) and ccw(A,B,C) != ccw(A,B,D)
 
 # intersection point of line1 and line2
 # https://stackoverflow.com/questions/20677795/how-do-i-compute-the-intersection-point-of-two-lines
 def line_intersection(line1, line2):
-    xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-    ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+  xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+  ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
 
-    def det(a, b):
-        return a[0] * b[1] - a[1] * b[0]
+  div = det(xdiff, ydiff)
+  if div == 0:
+    raise Exception('lines do not intersect')
 
-    div = det(xdiff, ydiff)
-    if div == 0:
-       raise Exception('lines do not intersect')
+  d = (det(*line1), det(*line2))
+  x = det(d, xdiff) / div
+  y = det(d, ydiff) / div
+  return x, y
 
-    d = (det(*line1), det(*line2))
-    x = det(d, xdiff) / div
-    y = det(d, ydiff) / div
-    return x, y
+def det(a, b):
+  return a[0] * b[1] - a[1] * b[0]
 
 def arrow_edge(p,loop=False):
   connections = []
@@ -185,7 +185,7 @@ def arrow_edge(p,loop=False):
       e0.append(e1[1]-((slope*gamma)/math.sqrt(slope**2 + 1)))
     else:
       e0.append(e1[1]+((slope*gamma)/math.sqrt(slope**2 + 1)))
-    e[1] = e[1].insert(0,e0)
+    e[1].insert(0,e0)
 
     q = np.inf
     conn = []
@@ -218,6 +218,7 @@ def arrow_edge(p,loop=False):
             if dist(midpoint(point1,point2),x) < q:
               q = dist(midpoint(point1,point2),x)
               conn = [a,e,e[1][1]]
+    e[1].pop(0)
     if len(conn)!=0:
       connections.append(conn)
 
@@ -267,8 +268,11 @@ def arrow_edge(p,loop=False):
             if dist(midpoint(point1,point2),x) < q:
               q = dist(midpoint(point1,point2),x)
               conn = [a,e,e[1][-2]]
+    e[1].pop()
     if len(conn)!=0:
       connections.append(conn)
+  
+  return connections
 
 def vertex_edge(p,loop=False):
   connections = []
@@ -311,7 +315,7 @@ def vertex_edge(p,loop=False):
   return connections
 
 def dist(a,b):
-  return LA.norm(a-b)
+  return math.sqrt((a[1]-b[1])**2 + (a[0]-b[0])**2)
 
 def midpoint(a,b):
   return [(a[0]+b[0])/2,(a[1]+b[1])/2]
