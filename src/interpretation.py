@@ -50,6 +50,12 @@ def recog(S_i,L,A,B,C):
         v.append(list(specs[comp]['center']))
         v.append(specs[comp]['radius'])
         curr_seg.append(v)
+      if comp=='triangle':
+        t.append('triangle')
+        t.append(list(specs[comp]['a']))
+        t.append(list(specs[comp]['b']))
+        t.append(list(specs[comp]['c']))
+        curr_seg.append(t)
       if comp=='edge':
         e.append('edge')
         e.append(list(specs[comp]))
@@ -58,12 +64,6 @@ def recog(S_i,L,A,B,C):
         l.append('loop')
         l.append(list(specs[comp]))
         curr_seg.append(l)
-      if comp=='triangle':
-        t.append('triangle')
-        t.append(list(specs[comp]['a']))
-        t.append(list(specs[comp]['b']))
-        t.append(list(specs[comp]['c']))
-        curr_seg.append(t)
 
     all_segs.append(curr_seg)
   
