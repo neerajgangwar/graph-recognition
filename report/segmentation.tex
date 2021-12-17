@@ -2,7 +2,7 @@
 \label{sec:segmentation}
 The first step towards graph recognition is segmentation. This step identifies the segmentation points in the input graph. These points are fed into the recognition task to identify a component. Our implementation is based on the idea presented by \citeauthor{daly2015hand} \cite{daly2015hand} and assumes that the entire component is drawn in one stroke. However, drawing multiple components in the same stroke is acceptable for our implementation.\\
 
-The segmentation points identify the transition from one component to the next. These are referred to as true segmentation points.  However, there are certain challenges in the segmentation task. These challenges arise from the fact that there might be additional points in a component with similar geometric properties as true segmentation points. This is shown in Figure \ref{fig:seg_false_neg}. The challenges can be divided into two buckets: false positives and false negatives. The points that are incorrectly identified as segmentation points contribute to false positives. These cases are less severe as they can be handled in the classification step. The points that are true segmentation points but are missed by the segmentation algorithm are false negatives. These cases are more severe as we cannot recover from these errors. The goal of the segmentation algorithm would be to minimize false positives while ensuring that there are no false negatives.\\
+The segmentation points identify the transition from one component to the next. These are referred to as true segmentation points.  However, there are certain challenges in the segmentation task. These challenges arise from the fact that there might be additional points in a component with similar geometric properties as true segmentation points. This is shown in Figure \ref{fig:seg_false_neg}. The challenges can be divided into two buckets: false-positives and false-negatives. The points that are incorrectly identified as segmentation points contribute to false-positives. These cases are less severe as they can be handled in the classification step. The points that are true segmentation points but are missed by the segmentation algorithm are false-negatives. These cases are more severe as we cannot recover from these errors. The goal of the segmentation algorithm would be to minimize false-positives while ensuring that there are no false-negatives.\\
 
 \begin{figure}
 	\centering
@@ -79,7 +79,7 @@ Once the speed is computed for all captured points, we find ranges of points whe
 
 After computing the potential segmentation points, we perform a post-processing step to drop the points that are close to each other. This step is similar to the pre-processing step discussed in the curvature-based segmentation algorithm and has a hyperparameter $d_t$.\\
 
-As we would see in subsection \ref{sec:seg_experiments}, this method is not super accurate and produces quite a few false positives. But it is very fast compared to the curvature-based segmentation. In general, the component classification step can take care of false positives. So, if a usecase requires faster computation, this method can be used with a good component classifier to reduce the overall computation time.
+As we would see in subsection \ref{sec:seg_experiments}, this method is not super accurate and produces quite a few false-positives. But it is very fast compared to the curvature-based segmentation. In general, the component classification step can take care of false-positives. So, if a usecase requires faster computation, this method can be used with a good component classifier to reduce the overall computation time.
 
 \begin{figure}
 	\centering
@@ -152,7 +152,7 @@ As we would see in subsection \ref{sec:seg_experiments}, this method is not supe
 
 \subsection{Experiments}
 \label{sec:seg_experiments}
-To test the segmentation algorithm, we drew some components and shapes manually on iPyCanvas and validated the results.\\
+To test the segmentation algorithms, we drew some components and shapes manually on iPyCanvas and validated the results.\\
 
 Figure \ref{fig:seg_results} shows the detected segmentation points for the curvature-based segmentation algorithm. Figure \ref{fig:seg_curvature} shows the curvature and abnormality plots for the stoke in figure \ref{fig:seg_results_arrow}. We also observed cases where a segmentation point was missed by this algorithm. This is shown in figure \ref{fig:seg_false_negative}. The abnormality plot shows all peaks correctly, but the last peak is below the threshold. Hence, the hyperparameter tuning is a critical step for this algorithm. Based on our experiments, the following values of hyperparameters worked best - $d_t = 2$, $s = 3$, $w = 12$, and $k = 1.2$.\\
 
