@@ -96,7 +96,7 @@ def recog(S_i,L,A,B,C):
   
   return sorted_candidates
 
-def score(p,A=-1.3,B=0.2,C=-0.6):
+def score(p,A=-1.1,B=0.3,C=-0.4):
   return A*num_components(p) + B*num_connections(p) + C*num_missing_connections(p)
 
 def num_components(p):
@@ -340,7 +340,7 @@ def is_isomorphic(z,Gi):
   - We did not check whether z and Gi had the same 
   adjacent vertex degrees because of complexity & time constraints.
   - Our algorithm checks the number of vertices, number of edges
-  and the degreee sequence of z and Gi.
+  and the vertex degreee sequence of z and Gi.
   '''
   vertices_z = 0
   vertices_g = 0
