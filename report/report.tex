@@ -42,14 +42,19 @@
 	
 	\input{./interpretation.tex}
 	
-	\section{Conclusions and Future Work}
+	\section{Conclusion and Future Work}
+	In this project, we worked on the online graph recognition problem. For offline recognition, we tried to use the same pipeline by converting an offline graph to a sequence of coordinates. But this approach was not successful as the current pipeline heavily relies on the ordering of the coordinates. The offline recognition problem can be modeled as a learning problem and deep learning approaches can be used to solve it.\\
+	
+	The segmentation algorithms discussed in this report heavily rely of hyperparameter tuning. The values of these parameters can vary from person-to-person. Rather than finding the parameter values that work for everyone, we can tune these parameter for an individual by taking feedback from the user. The speed-based segmentation can be explored further. To reduce the false-positives, an abnormality computation step similar to the curvature-based segmentation can be added to overcome the noise.\\
 	
 	For classification, we found that it was a task well-suited to multiple pipeline configurations, only needing to adjust the input format. The geometric feature approach described in the original paper was the most effective. The problem is simple enough that attempting convolutional methods introduces significant complexity for minimal increase in efficacy.\\
     
-    Classification is simple enough not to need an approach more complex than the features discussed here, but it is closely related to segmentation. Future work could include an object detection method to perform both tasks simultaneously.
+    Classification is simple enough not to need an approach more complex than the features discussed here, but it is closely related to segmentation. Future work could include an object detection method to perform both tasks simultaneously.\\
+    
+    In the current pipeline, there is no way to visualize the output, and the output needs to be evaluated by inspecting the probabilities and costs. This can be replaced with a user interface to visualize the output. 
 	
 	\section{Member Roles}
-	Neeraj: segmentation, Bryan: classification, Debopam: interpretation and training. All of us will worked on integrating the subparts into a whole. We used Github to maintain and share data (\href{https://github.com/neerajgangwar/graph-recognition}{Github Repository}). We met once a week to discuss updates and issues.
+	Neeraj: segmentation, Bryan: classification, Debopam: interpretation and training. All of us worked on integrating the subparts into a whole. We used Github to maintain and share data (\href{https://github.com/neerajgangwar/graph-recognition}{Github Repository}). We met once a week to discuss updates and issues.
 	
 	\printbibliography[title=References]
 	
