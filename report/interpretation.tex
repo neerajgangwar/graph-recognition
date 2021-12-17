@@ -66,6 +66,6 @@ We conducted our experiments using the end-to-end pipeline (shown in the IPython
     \label{fig:cost_plot}
 \end{figure}
 
-\subsection{Analysis}
+\section{Analysis}
 
 Table~\ref{tab:table_cost} shows that our pipeline did not perform exceptionally well. This was mainly because the cost, as defined in \cite{daly2015hand}, is a very harsh penalty. It is binary with no partial reward for some or most of the subgraph being correct. Since the correctness of an interpreted subgraph is determined by whether it is isomorphic to the intended subgraph, the cost at a particular step will 0 if and only if there is an isomorphism between the two. Other issues that affect our algorithm is the fact that we reuse the thresholds from \cite{daly2015hand}. These thresholds may not be appropriate for our drawing setting in iPyCanvas \cite{ipycanvas}. Training to find our own values of the coefficients in the scoring function was not as helpful as expected. A reason could be that the search space for the parameter grid search was not right. Another potential weakness in our method is probably the inconclusive isomorphism function. Figure~\ref{fig:cost_plot} shows that subgraphs with vertex and edges are more easily interpreted than those with loops and arrows. This was expected as circles for vertices and smooth lines for edges are much easier to break into segments and classify than self-loops and triangles for arrows.
