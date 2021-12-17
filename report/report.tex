@@ -15,6 +15,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{booktabs}
 \usepackage[breaklinks=true,bookmarks=false]{hyperref}
 \usepackage[sorting=none, maxcitenames=2]{biblatex}
 \addbibresource{bibliography.bib}
@@ -32,8 +33,6 @@
 
 \begin{document}
 	\maketitle
-	%\vspace{-1.5em}
-	%\rule{\textwidth}{0.1em}
 	
 	\input{./introduction.tex}
 	
@@ -43,16 +42,14 @@
 	
 	\input{./interpretation.tex}
 	
-	\section{Conclusions}
+	\section{Conclusions and Future Work}
 	
-	For classification, we found that it was a task well-suited to multiple pipeline configurations, only needing to adjust the input format. The geometric feature approach described in the original paper was the most effective. The problem is simple enough that attempting convolutional methods introduces significant complexity for minimal increase in efficacy.
-	
-	\subsection{Future Work}
+	For classification, we found that it was a task well-suited to multiple pipeline configurations, only needing to adjust the input format. The geometric feature approach described in the original paper was the most effective. The problem is simple enough that attempting convolutional methods introduces significant complexity for minimal increase in efficacy.\\
     
     Classification is simple enough not to need an approach more complex than the features discussed here, but it is closely related to segmentation. Future work could include an object detection method to perform both tasks simultaneously.
 	
 	\section{Member Roles}
-	Neeraj: segmentation, Bryan: classification, Debopam: interpretation and training. All of us will work on integrating the subparts into a whole. We use Github to maintain and share data (\href{https://github.com/neerajgangwar/graph-recognition}{Github Repository}). We meet once a week to discuss updates and issues.
+	Neeraj: segmentation, Bryan: classification, Debopam: interpretation and training. All of us will worked on integrating the subparts into a whole. We used Github to maintain and share data (\href{https://github.com/neerajgangwar/graph-recognition}{Github Repository}). We met once a week to discuss updates and issues.
 	
 	\printbibliography[title=References]
 	
